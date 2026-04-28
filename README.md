@@ -8,29 +8,6 @@ The goal of this module is to understand the full deployment flow of an applicat
 
 This README uses **DigitalOcean terminology** throughout. Instead of AWS terms like EC2 instance or Azure VM, the correct DigitalOcean terms are **Droplet**, **region**, **image**, **size**, **Control Panel**, and **Cloud Firewall**.[2][4]
 
-## Technologies Used
-
-- **DigitalOcean** – cloud provider used in this module.[2]
-- **Droplet** – DigitalOcean virtual machine used as the cloud server.[2]
-- **Ubuntu** – Linux operating system running on the Droplet.[2]
-- **OpenJDK 17** – Java runtime required for the Spring Boot application.
-- **Gradle** – build tool used to package the application.
-- **Spring Boot** – backend application framework.
-- **SSH** – secure remote access to the Droplet.[5]
-- **SCP** – secure file copy used to transfer the JAR file to the server.
-
-## DigitalOcean Terminology
-
-| General Term | DigitalOcean Term |
-|---|---|
-| Virtual machine | Droplet |
-| Datacenter location | Region |
-| Operating system template | Image |
-| VM plan or instance type | Size |
-| Cloud web console | Control Panel |
-| Network-level firewall | Cloud Firewall |
-
-DigitalOcean's Droplet creation workflow requires selecting an **image**, **region**, and **size**, and it supports adding SSH keys during provisioning for secure access.[2][5]
 
 ## Prerequisites
 
