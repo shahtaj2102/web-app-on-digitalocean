@@ -2,11 +2,6 @@
 
 This repository documents the hands‑on work for **Module 05 – Cloud deployment**, in which a Java + React‑style Spring Boot application is built locally, deployed to a Linux cloud server, and made accessible on a public URL.
 
-You can also reference the related repositories:
-- Student example: https://gitlab.com/twn-devops-bootcamp/latest/05-cloud/java-react-example
-- Instructor demo: https://gitlab.com/twn-devops-bootcamp-2026/module-05-demo
-
-
 ## 1. Install required packages
 
 On the cloud server (Ubuntu):
