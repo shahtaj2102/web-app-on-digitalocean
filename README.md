@@ -1,35 +1,36 @@
 # DevOps 05 – Cloud Server Deployment on DigitalOcean
 
-This repository documents the hands-on work for **Module 05 – Cloud & Infrastructure as a Service (IaaS)** using **DigitalOcean**. In this project, a Java + React-style Spring Boot application is built locally, transferred to a **DigitalOcean Droplet**, and run on an Ubuntu Linux server so it can be accessed through a public IP address.[1][2][3]
+This repository documents the hands-on work for **Module 05 – Cloud & Infrastructure as a Service (IaaS)** using **DigitalOcean**. In this project, a Java + React-style application is built locally, transferred to a **DigitalOcean Droplet**, and run on an Ubuntu Linux server so it can be accessed through a public IP address.
 
 ## Project Overview
 
-The goal of this module is to understand the full deployment flow of an application on a cloud server. That includes provisioning a Linux virtual machine, connecting to it securely with SSH, installing runtime dependencies, copying the application artifact, starting the app, and allowing inbound traffic to the application port through a DigitalOcean firewall rule.[2][4][5]
-
-This README uses **DigitalOcean terminology** throughout. Instead of AWS terms like EC2 instance or Azure VM, the correct DigitalOcean terms are **Droplet**, **region**, **image**, **size**, **Control Panel**, and **Cloud Firewall**.[2][4]
-
+The goal of this module is to understand the full deployment flow of an application on a cloud server. That includes provisioning a Linux virtual machine, connecting to it securely with SSH, installing runtime dependencies, copying the application artifact, starting the app, and allowing inbound traffic to the application port through a DigitalOcean firewall rule.
 
 ## Prerequisites
 
 Before deploying the application, make sure the following are ready:
 
 - A **DigitalOcean account**.
-- A running **Ubuntu Droplet** with a public IPv4 address.[2]
-- An **SSH key** added to the Droplet for login access.[5]
-- The application project available locally.
-- Access to the bootcamp sample application repository.[3]
+
+## Steps to complete
+
+- Run an **Ubuntu Droplet** with a public IPv4 address.
+- Add an **SSH key** to the Droplet for login access.
+- Package the application project available locally.
+- Copy the project to the **Ububtu Droplet**.
+- Run the project and access it in browser.
 
 ## Provision the Droplet
 
 Create a new Ubuntu Droplet in the DigitalOcean Control Panel:
 
-1. Sign in to the **DigitalOcean Control Panel**.[2]
-2. Click **Create** and select **Droplets**.[2]
-3. Choose an Ubuntu **image**.[2]
-4. Select a **region** close to your location or target users.[2]
-5. Choose a Droplet **size** that fits the project needs.[2]
-6. Add your **SSH key** during setup for secure authentication.[5]
-7. Finish creation and wait until the Droplet receives a public IP address.[2]
+1. Sign in to the **DigitalOcean Control Panel**.
+2. Click **Create** and select **Droplets**.
+3. Choose an Ubuntu **image**.
+4. Select a **region** close to your location or target users.
+5. Choose a Droplet **size** that fits the project needs.
+6. Add your **SSH key** during setup for secure authentication.
+7. Finish creation and wait until the Droplet receives a public IP address.
 
 ## Install Required Packages
 
