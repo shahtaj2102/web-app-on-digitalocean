@@ -1,4 +1,4 @@
-# Cloud Server Deployment on DigitalOcean
+# Cloud Server Deployment on DigitalOcean.
 
 This repository documents the hands-on work for **Module 05 – Cloud & Infrastructure as a Service (IaaS)** using **DigitalOcean**. In this project, a Java + React-style application is built locally, transferred to a **DigitalOcean Droplet**, and run on an Ubuntu Linux server so it can be accessed through a public IP address.
 
