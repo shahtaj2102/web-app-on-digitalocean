@@ -22,15 +22,55 @@ Before deploying the application, make sure the following are ready:
 
 ## Provision the Droplet
 
-Create a new Ubuntu Droplet in the DigitalOcean Control Panel:
+Create a new Ubuntu Droplet in DigitalOcean:
 
 1. Sign in to the **DigitalOcean Control Panel**.
 2. Click **Create** and select **Droplets**.
 3. Choose an Ubuntu **image**.
 4. Select a **region** close to your location or target users.
 5. Choose a Droplet **size** that fits the project needs.
-6. Add your **SSH key** during setup for secure authentication.
-7. Finish creation and wait until the Droplet receives a public IP address.
+6. Add your **SSH key** during setup for secure authentication.  
+To create a SSH Key  
+These steps can be used to create your SSH Key for Linux, Windows or add to our **Ubuntu Droplet** server.
+```bash
+# On windows
+
+# This is to start the ssh-agent so it can remember our private key & also remember the passphrase if we set any.
+Start-Service ssh-agent
+
+# This is to set the ssh-agent to start in the background everytime we log into our computer.
+Set-Service -Name ssh-agent -StartupType 'Automatic'
+
+# You will be prompted a passphrase. Enter twice or skip entirely.
+ssh-keygen -C "shahtaj@windows"
+
+#run this to read/display file (public key) in the cmd terminal to be able to copy it.
+cat ~/.ssh/id_ed25519.pub
+```  
+  For linux and mac
+```bash
+# You will be prompted a passphrase. Enter twice or skip entirely.
+ssh-keygen -C "shahtaj@linux"
+
+#run this to read/display file (public key) in the terminal to be able to copy it.
+cat ~/.ssh/id_ed25519.pub
+
+```
+7. Copy this ssh key and paste it in the ssh key box promt. (this will save the public key on Digital ocean permanently.)
+8. Finish creation and wait until the Droplet receives a public IP address.
+9. Create a firewall by going in the network tab with only port 22 (default port for ssh) open for ssh.
+10. The firewall will be created for the whole system, we will need to add our droplet to it.
+
+## SSH into our droplet
+
+Now that the droplet is ready we will ssh into the droplet from our local system.  
+
+1. Copy the Droplets Public IPV4 address from it's details/home page.
+2. On the local system run
+```bash
+ssh root@YOUR_DROPLET_PUBLIC_IP
+```
+
 
 ## Install Required Packages
 
