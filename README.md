@@ -1,199 +1,98 @@
-# Cloud Server Deployment on DigitalOcean.
+# Web App Deployment on DigitalOcean
 
-This repository documents the hands-on work for **Module 05 – Cloud & Infrastructure as a Service (IaaS)** using **DigitalOcean**. In this project, a Java + React-style application is built locally, transferred to a **DigitalOcean Droplet**, and run on an Ubuntu Linux server so it can be accessed through a public IP address.
+Provisioned a cloud server from scratch and deployed a Java/Spring Boot app to it: created the droplet, set up SSH key authentication, installed the runtime, built the app, shipped the artifact to the server, and opened exactly the firewall access needed to reach it from a browser.
 
-## Project Overview
+**Note on context:** This is hands-on lab work from the TechWorld with Nana DevOps bootcamp (Module 5). The app itself (`app/`, a Java + React example) is a pre-built third-party example project (originally from [pmendelski/java-react-example](https://github.com/pmendelski/java-react-example)) used to practice the deployment flow, not something I wrote. I'm disclosing that rather than letting it look like more than it is. The droplet provisioning, SSH setup, build, and firewall configuration are the parts I actually did.
 
-The goal of this module is to understand the full deployment flow of an application on a cloud server. That includes provisioning a Linux virtual machine, connecting to it securely with SSH, installing runtime dependencies, copying the application artifact, starting the app, and allowing inbound traffic to the application port through a DigitalOcean firewall rule.
+## Why This Exists
 
-## Prerequisites
+Before you can automate anything with Jenkins or Kubernetes, you need to understand what a deployment actually involves at the server level: a real Linux box, a real network boundary, and a real process running on it. This project was about doing that manually first, provisioning a server, moving a build artifact onto it, and running it, so the CI/CD tooling I'm learning next has something real underneath it instead of being magic.
 
-Before deploying the application, make sure the following is ready:
+## Workflow
 
-- A **DigitalOcean account**.
+```mermaid
+flowchart LR
+    A[Create Ubuntu Droplet] --> B[Add SSH key + firewall for port 22]
+    B --> C[SSH into Droplet]
+    C --> D[Install Java 17 and Gradle]
+    D --> E[Build app locally: gradlew build]
+    E --> F[Copy JAR to Droplet via scp]
+    F --> G[Run app: java -jar]
+    G --> H[Open firewall port 7071]
+    H --> I[Access app via browser]
+```
 
-## Steps to complete
+## What I Did
 
-- Run an **Ubuntu Droplet** with a public IPv4 address.
-- Add an **SSH key** to the Droplet for login access.
-- Package the application project available locally.
-- Copy the project to the **Ububtu Droplet**.
-- Run the project and access it in browser.
+**1. Provisioned the droplet**
+Created an Ubuntu droplet in DigitalOcean, sized for the app, and generated an SSH key pair locally (`ssh-keygen`) rather than relying on password login. Added the public key during droplet creation so DigitalOcean would authorize it automatically.
 
-## Provision the Droplet
+**2. Locked the firewall down to what was needed, early**
+Attached a Cloud Firewall to the droplet with only port 22 (SSH) open at first. Nothing else was reachable until I explicitly opened it later, rather than leaving the server wide open by default.
 
-Create a new Ubuntu Droplet in DigitalOcean:
+**3. Connected over SSH**
+Logged in with `ssh root@<droplet-ip>` using the key pair instead of a password. Confirmed I could also authenticate as a non-root user where `authorized_keys` was set up, since running everything as root long-term isn't good practice.
 
-1. Sign in to the **DigitalOcean Control Panel**.
-2. Click **Create** and select **Droplets**.
-3. Choose an Ubuntu **image**.
-4. Select a **region** close to your location or target users.
-5. Choose a Droplet **size** that fits the project needs.
-6. Add your **SSH key** during setup for secure authentication.  
-To create a SSH Key  
-These steps can be used to create your SSH Key for Linux, Windows or add to our **Ubuntu Droplet** server.
+**4. Installed the runtime on the server**
+Installed OpenJDK 17 and Gradle with `apt`, then verified both with `java --version` and `gradle --version` before trying to run anything.
+
+**5. Built the application locally**
+Cloned the example app and ran `./gradlew build` on my own machine rather than on the droplet, producing the packaged JAR under `build/libs/`. Keeping the build off the server keeps the droplet's job simple: run the artifact, don't compile it.
+
+**6. Shipped the artifact to the server**
+Used `scp` to copy the built JAR from my local machine to the droplet, authenticating with the same SSH key rather than a password.
+
+**7. Ran the app and checked it actually started**
+Started it with `java -jar`, and checked the logs for Spring Boot's startup confirmation and the port it bound to, instead of assuming a clean exit meant success.
+
+**8. Opened just enough firewall access to reach it**
+Added a second Cloud Firewall rule for TCP port 7071 (the app's port), on top of the SSH rule from step 2, then accessed it in the browser at `http://<droplet-ip>:7071`. SSH access on 22 stayed open for ongoing administration.
+
+## Skills Demonstrated
+
+Linux server provisioning and administration, SSH key-based authentication (generating and installing keys instead of relying on passwords), cloud firewall configuration scoped to only the ports actually needed, building a JVM application from source with Gradle, remote artifact transfer with `scp`, running and verifying a server-side Java process from its logs, and basic separation of build and runtime environments.
+
+## Repo Structure
+
+```
+.
+├── app/          # java-react-example, third-party example app used for this deployment exercise
+└── README.md
+```
+
+## Key Commands
+
 ```bash
-# On windows
-
-# This is to start the ssh-agent so it can remember our private key & also remember the passphrase if we set any.
-Start-Service ssh-agent
-
-# This is to set the ssh-agent to start in the background everytime we log into our computer.
-Set-Service -Name ssh-agent -StartupType 'Automatic'
-
-# You will be prompted a passphrase. Enter twice or skip entirely.
-ssh-keygen -C "shahtaj@windows"
-
-#run this to read/display file (public key) in the cmd terminal to be able to copy it.
+# SSH key setup
+ssh-keygen -C "shahtaj@device"
 cat ~/.ssh/id_ed25519.pub
-```  
-  For linux and mac
-```bash
-# You will be prompted a passphrase. Enter twice or skip entirely.
-ssh-keygen -C "shahtaj@linux"
 
-#run this to read/display file (public key) in the terminal to be able to copy it.
-cat ~/.ssh/id_ed25519.pub
+# Connect to the droplet
+ssh -i ~/.ssh/your_private_key root@your_droplet_ip
 
-```
-7. Copy this ssh key and paste it in the ssh key box promt. (this will save the public key on Digital ocean permanently.)
-8. Finish creation and wait until the Droplet receives a public IP address.
-9. Create a firewall by going in the network tab with only port 22 (default port for ssh) open for ssh.
-10. The firewall will be created for the whole system, we will need to add our droplet to it.
-
-## SSH into our droplet
-
-Now that the droplet is ready we will ssh into the droplet from our local system:  
-
-1. Copy the Droplets Public IPV4 address from it's details/home page.
-2. On the local system run
-```bash
-ssh root@YOUR_DROPLET_PUBLIC_IP
-```
-3. The first login is often as `root` as the provider configures it that way
-4. If you have a user profile on the droplet and it has Authorized_keys file in .ssh you can login as the user aswell using:
-
-```
-ssh USER_NAME@YOUR_DROPLET_PUBLIC_IP
-```
-
-## Install Required Packages
-
-SSH into the Droplet and install Java 17(the example targets java17) and Gradle on Ubuntu:
-
-```bash
+# Install runtime on the server
 sudo apt update
 sudo apt install openjdk-17-jdk gradle -y
-```
-
-Verify the installation:
-
-```bash
 java --version
 gradle --version
-```
 
-Expected output should show **OpenJDK 17** and a working Gradle version. The exact Gradle version can vary depending on the Ubuntu package repository configured on the server.
-
-## Build the Application Locally
-
-Clone the java-react-example project on your local machine:
-
-```bash
-git clone https://gitlab.com/twn-devops-bootcamp/latest/05-cloud/java-react-example.git
-cd java-react-example
-```
-
-Build the application JAR:
-
-```bash
+# Build locally
 ./gradlew build
-```
 
-After a successful build, the packaged JAR file is typically created in:
-
-```bash
-build/libs/
-```
-
-The example repository is a Java React example used in the Module 05 cloud section.
-
-## Copy the JAR to the Droplet
-
-From your local machine, copy the JAR file to the DigitalOcean Droplet with `scp`:  
-as a `root` user:
-
-```bash
+# Ship the artifact
 scp -i ~/.ssh/your_private_key build/libs/java-react-example.jar root@your_droplet_ip:/root
-```
 
-Replace `your_droplet_ip` with your Droplet's public IP address and replace `~/.ssh/your_private_key` with the path to your private SSH key.
-
-If you use a non-root user(recommended for better safety) instead, adjust the username and destination path accordingly and run:  
-```
-scp -i ~/.ssh/your_private_key build/libs/java-react-example.jar your_username@your_droplet_ip:/home/your_username
-```
-
-## Connect to the Droplet
-
-Use SSH to log in:
-
-```bash
-ssh -i ~/.ssh/your_private_key root@your_droplet_ip
-```
-
-If you are using a regular user account instead of `root`, use:
-
-```bash
-ssh -i ~/.ssh/your_private_key your_username@your_droplet_ip
-```
-
-
-## Run the Application
-
-After logging in to the Droplet, start the application:
-
-```bash
+# Run it
 java -jar java-react-example.jar
 ```
 
-If the file is in another directory, change into that directory first or provide the full path. When the application starts successfully, Spring Boot should log that it has started and show the application port.
+## Notes & Limitations
 
-## Open the Application Port
+Replace placeholder values like `your_droplet_ip` and `your_private_key` with real deployment details. This lab runs the app directly as root on port 7071 with no reverse proxy or TLS in front of it, both things a production setup would add. Firewall source ranges here are left open to all IPv4/IPv6 for simplicity; a real deployment would scope that down further.
 
-To make the application reachable from the browser, create an inbound **Cloud Firewall** rule in DigitalOcean for TCP port `7071`. DigitalOcean firewalls let you configure inbound and outbound traffic rules for the firewall attached to the Droplets.
+## Related Projects
 
-In the DigitalOcean Control Panel, attach a firewall to the Droplet and allow:
+This is the first step in a small pipeline I built across three repos. [`Nexus_Repository_Manager`](https://github.com/shahtaj2102/Nexus_Repository_Manager) sets up an artifact repository on a droplet provisioned the same way, and [`Docker-and-Containers`](https://github.com/shahtaj2102/Docker-and-Containers) containerizes an app and pushes the image to that registry.
 
-- **Protocol:** TCP
-- **Port Range:** `7071`
-- **Sources:** your preferred source range, such as all IPv4/IPv6 addresses if public access is required.
-
-It is also common to leave SSH on port `22` oprn so the server remains accessible for administration.
-
-## Access the Application
-
-Once the application is running and the firewall rule is open, access it in your browser using the Droplet's public IP address and application port:
-
-```text
-http://your_droplet_ip:7071
-```
-
-If the app exposes a specific endpoint, append that path to the URL.
-
-## Deployment Flow Summary
-
-1. Create an Ubuntu **Droplet** on DigitalOcean.
-2. Add an **SSH key** and connect securely.
-3. Install Java and Gradle on the server.
-4. Build the Spring Boot application locally.
-5. Copy the JAR file to the Droplet with `scp`.
-6. Run the application with `java -jar`.
-7. Open port `7071` in a DigitalOcean **Cloud Firewall**.
-8. Access the app from the browser using the Droplet IP and port.
-
-## Notes
-
-- Replace placeholder values such as `your_droplet_ip`, `your_username`, and `~/.ssh/your_private_key` with your real deployment details.
-- If your app runs on a different port, update the firewall rule and browser URL to match that port.
-
+---
+Shahtaj Singh Gill - [LinkedIn](https://www.linkedin.com/in/shahtaj-aws-sap-toronto/) / [GitHub](https://github.com/shahtaj2102)
