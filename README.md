@@ -2,7 +2,7 @@
 
 Provisioned a cloud server from scratch: created the droplet, generated an SSH key pair and used it (not a password) to authenticate, and locked the Cloud Firewall down to only the access actually needed. This repo also includes PrintFlow, a small 3D-print job dashboard I built, which this droplet is set up to serve.
 
-## Why This Exists
+## Why this Exists
 
 Before you can automate anything with Jenkins or Kubernetes, you need to understand what a deployment actually involves at the server level: a real Linux box, a real network boundary, and a real process running on it. This project was about doing that manually first, provisioning a server and controlling exactly what's exposed on it, so the CI/CD tooling I'm learning next has something real underneath it instead of being magic.
 
