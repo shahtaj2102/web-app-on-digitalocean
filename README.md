@@ -84,7 +84,7 @@ sudo systemctl reload nginx
 
 ## Notes & Limitations
 
-Replace placeholder values like `your_droplet_ip` and `your_private_key` with real deployment details. The dashboard currently renders a hardcoded array of sample print jobs in `script.js`, there's no backend yet; that's the next repo in this pipeline (a Node/Express API with a real database). This setup also runs everything as root with no TLS in front of it, both things a production deployment would add.
+Replace placeholder values like `your_droplet_ip` and `your_private_key` with real deployment details. The dashboard currently renders a hardcoded array of sample print jobs in `script.js`. There's no backend yet; that's the next repo in this pipeline (a Node/Express API with a real database). This setup also runs everything as root with no TLS in front of it, both things a production deployment would add.
 
 ## Related Projects
 
